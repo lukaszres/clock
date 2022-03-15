@@ -27,14 +27,12 @@ int main(void) {
 //			ANODES_PORT &= (ANODE_1 | ANODE_2);
 
 	while (1) {
-		ANODES_PORT &= (ANODE_1);
 		ANODES_PORT = (ANODES_PORT & ~ANODE_MASK) | (ANODE_1 & ANODE_MASK); //cykliczne przełączanie wyświetlaczy
 		for (int i = 10; i >= 0; i--) {
 			cyfra[0] = i;
 			display();
 			_delay_ms(1000);
 		}
-		ANODES_PORT |= (ANODE_2);
 		ANODES_PORT = (ANODES_PORT & ~ANODE_MASK) | (ANODE_2 & ANODE_MASK); //cykliczne przełączanie wyświetlaczy
 		for (int i = 10; i >= 0; i--) {
 			cyfra[0] = i;
