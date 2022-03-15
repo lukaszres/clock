@@ -9,36 +9,38 @@
 #include <util/delay.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
-
 #include "multiplex/multiplex.h"
+#include "clock/clock.h"
 
-#define DISP_1 0b00000001
-#define DISP_2 0b00000010
-#define MULTIPLEXER PORTC
+void timer1_init();
 
 int main(void) {
+	valueToDisplay[0] = 10;
+	valueToDisplay[1] = 10;
+	sei();
+	timer1_init();
 	multiplex_init();
-	cyfra[0] = 9;
-	cyfra[1] = 3;
-//
-//	sei();
-
-//	SEGMENT_PORT &= (SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G);
-//			ANODES_PORT &= (ANODE_1 | ANODE_2);
 
 	while (1) {
-		ANODES_PORT = (ANODES_PORT & ~ANODE_MASK) | (ANODE_1 & ANODE_MASK); //cykliczne przełączanie wyświetlaczy
-		for (int i = 10; i >= 0; i--) {
-			cyfra[0] = i;
-			display();
-			_delay_ms(1000);
-		}
-		ANODES_PORT = (ANODES_PORT & ~ANODE_MASK) | (ANODE_2 & ANODE_MASK); //cykliczne przełączanie wyświetlaczy
-		for (int i = 10; i >= 0; i--) {
-			cyfra[0] = i;
-			display();
-			_delay_ms(1000);
-		}
 	}
 }
 
+ISR(TIMER1_COMPA_vect) {
+	display();	// displays actual value of cyfra[]
+
+	/*
+	 Timer2 overflows every 0,0128
+	 Every 78 times the time passed is equal to 0,998s4 (almost 1 sec)
+	 */
+	countClock();
+}
+
+void timer1_init() {
+	TCCR1B |= (1 << WGM12) | (1 << CS11) | (1 << CS10);	// set up timer with prescaler = 64 and CTC mode
+														//Set prescalar to 64/1MHz : 1 click = 64us (assume 1MHz)
+														//0,000064
+	TIMSK |= (1 << OCIE1A);			// enable timer1 interrupts compare a match
+	TCNT1 = 0;											// initialize counter
+	OCR1A = 200;									// initialize compare value
+
+}

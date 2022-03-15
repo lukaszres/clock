@@ -32,7 +32,7 @@
 void multiplex_init(void);
 void display(void);
 
-extern uint8_t cyfra[2];
+extern uint8_t valueToDisplay[2];
 //extern const uint8_t cyfry[10];
 
 #endif /* MULTIPLEX_MULTIPLEX_H_ */
