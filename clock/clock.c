@@ -6,9 +6,11 @@
  */
 #include <stdint.h>
 #include "../multiplex/multiplex.h"
+#include <stdbool.h>
 
 unsigned char seconds;
 unsigned char ticks = 78;
+bool displayClock = true;
 
 void setValueToDisplay(uint8_t liczba) {
 	if (liczba == 0) {
@@ -32,6 +34,8 @@ void countClock() {
 		if (seconds >= 60) {
 			seconds = 0;
 		}
-		setValueToDisplay(seconds);
+		if (displayClock) {
+			setValueToDisplay(seconds);
+		}
 	}
 }
