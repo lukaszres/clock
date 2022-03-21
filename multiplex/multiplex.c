@@ -11,8 +11,8 @@
 #include <avr/interrupt.h>
 #include "multiplex.h"
 
-const uint8_t digits[] PROGMEM = {
-		(SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F), 			//0
+const uint8_t digits[] PROGMEM = { (SEG_A | SEG_B | SEG_C | SEG_D | SEG_E
+		| SEG_F), 			//0
 		(SEG_B | SEG_C),											//1
 		(SEG_A | SEG_B | SEG_D | SEG_E | SEG_G),					//2
 		(SEG_A | SEG_B | SEG_C | SEG_D | SEG_G),					//3
@@ -23,26 +23,25 @@ const uint8_t digits[] PROGMEM = {
 		(SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G),	//8
 		(SEG_A | SEG_B | SEG_C | SEG_D | SEG_F | SEG_G),			//9
 		0 };
-uint8_t valueToDisplay[2];
-
+uint8_t valueToDisplay[4];
 
 void multiplex_init(void) {
 	SEGMENT_DIRECTION = 0xff;
 	SEGMENT_PORT = 0xff;
 
-	ANODES_DIRECTION |= ANODE_1 | ANODE_2;
-	ANODES_PORT |= ANODE_1 | ANODE_2;
+	ANODES_DIRECTION |= ANODE_1 | ANODE_2 | ANODE_3 | ANODE_4;	// set anodes to exit
+	ANODES_PORT &= ANODE_1 | ANODE_2 | ANODE_3 | ANODE_4;		// clear displays
 }
 
 void display(void) {
 	static uint8_t displayNumber;
-	ANODES_PORT = (ANODES_PORT | ANODE_MASK);
+	ANODES_PORT = (ANODES_PORT & ANODE_MASK);		//clear displays
 	SEGMENT_PORT = pgm_read_byte(&digits[valueToDisplay[displayNumber]]);
 
-	ANODES_PORT = (ANODES_PORT & ~ANODE_MASK) | (~(1 << displayNumber) & ANODE_MASK); //cyclic switching of displays
+	ANODES_PORT = (ANODES_PORT & ~ANODE_MASK) | ((1 << displayNumber) & ANODE_MASK); //cyclic switching of displays
 
 	displayNumber++;
-	if (displayNumber > 1) {
+	if (displayNumber > 3) {
 		displayNumber = 0;
 	}
 }

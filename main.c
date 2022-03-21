@@ -22,8 +22,10 @@ void key_press(uint8_t *keylock, volatile uint8_t *KEY_PIN, uint8_t key_mask);
 uint8_t keylock1;
 
 int main(void) {
-	valueToDisplay[0] = 10;
-	valueToDisplay[1] = 10;
+	valueToDisplay[0] = 1;
+	valueToDisplay[1] = 2;
+	valueToDisplay[2] = 3;
+	valueToDisplay[3] = 4;
 	_delay_ms(10); // oczekiwanie na ustalenie się stanu wysokiego na wejściu klawisza
 	sei();
 	timer1_init();
@@ -52,21 +54,16 @@ void key_press(uint8_t *keylock, volatile uint8_t *KEY_PIN, uint8_t key_mask) {
 }
 
 ISR(TIMER1_COMPA_vect) {
-	display();	// displays actual value of cyfra[]
-
-	/*
-	 Timer2 overflows every 0,0128
-	 Every 78 times the time passed is equal to 0,998s4 (almost 1 sec)
-	 */
+	display();	// displays valueToDisplay[]
 	countClock();
 }
 
 void timer1_init() {
 	TCCR1B |= (1 << WGM12) | (1 << CS11) | (1 << CS10);	// set up timer with prescaler = 64 and CTC mode
-														//Set prescalar to 64/1MHz : 1 click = 64us (assume 1MHz)
+														//Set prescaler to 64/1MHz : 1 click = 64us (assume 1MHz)
 														//0,000064
 	TIMSK |= (1 << OCIE1A);			// enable timer1 interrupts compare a match
 	TCNT1 = 0;											// initialize counter
-	OCR1A = 200;									// initialize compare value
+	OCR1A = 50;									// initialize compare value
 
 }
