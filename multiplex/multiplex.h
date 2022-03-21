@@ -33,6 +33,7 @@
 
 void multiplex_init(void);
 void display(void);
+void setValueToDisplay(uint8_t liczba, uint8_t firstNumber, uint8_t secondNumber);
 
 extern uint8_t valueToDisplay[4];
 

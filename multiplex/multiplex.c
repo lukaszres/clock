@@ -11,8 +11,7 @@
 #include <avr/interrupt.h>
 #include "multiplex.h"
 
-const uint8_t digits[] PROGMEM = { (SEG_A | SEG_B | SEG_C | SEG_D | SEG_E
-		| SEG_F), 			//0
+const uint8_t digits[] PROGMEM = { (SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F), 			//0
 		(SEG_B | SEG_C),											//1
 		(SEG_A | SEG_B | SEG_D | SEG_E | SEG_G),					//2
 		(SEG_A | SEG_B | SEG_C | SEG_D | SEG_G),					//3
@@ -43,5 +42,17 @@ void display(void) {
 	displayNumber++;
 	if (displayNumber > 3) {
 		displayNumber = 0;
+	}
+}
+
+void setValueToDisplay(uint8_t liczba, uint8_t firstNumber, uint8_t secondNumber) {
+	if (liczba == 0) {
+		valueToDisplay[firstNumber] = 0;
+		valueToDisplay[secondNumber] = 0;
+	} else {
+		uint8_t tens = liczba / 10;
+		uint8_t units = liczba - tens * 10;
+		valueToDisplay[firstNumber] = tens;
+		valueToDisplay[secondNumber] = units;
 	}
 }

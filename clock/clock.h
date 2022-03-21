@@ -10,9 +10,9 @@
 #include <stdbool.h>
 
 extern unsigned char seconds;
+extern unsigned char minutes;
 extern bool displayClock;
 
-void countClock(void);
-void setValueToDisplay(uint8_t liczba);
+void countClock(float comparatorOverflows);
 
 #endif /* CLOCK_CLOCK_H_ */
