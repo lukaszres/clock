@@ -8,8 +8,8 @@
 #include "../multiplex/multiplex.h"
 #include <stdbool.h>
 
-unsigned char seconds;
-unsigned char minutes;
+unsigned char seconds = 60;
+unsigned char minutes = 60;
 uint16_t ticks = 312;
 bool displayClock = true;
 
@@ -40,6 +40,7 @@ void countClock(float comparatorOverflows) {
 }
 
 void resetTime() {
-	seconds = 0;
-	minutes = 0;
+	seconds = 60;
+	minutes = 60;
+	ticks = 312;
 }
