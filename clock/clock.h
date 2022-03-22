@@ -14,5 +14,6 @@ extern unsigned char minutes;
 extern bool displayClock;
 
 void countClock(float comparatorOverflows);
+void resetTime();
 
 #endif /* CLOCK_CLOCK_H_ */

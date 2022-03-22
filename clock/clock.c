@@ -38,3 +38,8 @@ void countClock(float comparatorOverflows) {
 		}
 	}
 }
+
+void resetTime() {
+	seconds = 0;
+	minutes = 0;
+}

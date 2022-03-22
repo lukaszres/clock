@@ -17,9 +17,11 @@
 #define KEY3 (1<<PD2)
 
 void timer1_init();
-void key_press(uint8_t *keylock, volatile uint8_t *KEY_PIN, uint8_t key_mask);
+void key_press(uint8_t *keylock, volatile uint8_t *KEY_PIN, uint8_t key_mask, void (*f)());
+void displayMenu();
 
 uint8_t keylock1;
+uint8_t keylock2;
 float comparatorOverflows;
 
 int main(void) {
@@ -34,23 +36,29 @@ int main(void) {
 
 	PORTD |= KEY1 | KEY2 | KEY3;
 	while (1) {
-		key_press(&keylock1, &PIND, KEY2);
+		key_press(&keylock1, &PIND, KEY2, displayMenu);
+		key_press(&keylock2, &PIND, KEY3, resetTime);
 	}
 }
 
-void key_press(uint8_t *keylock, volatile uint8_t *KEY_PIN, uint8_t key_mask) {
+void displayMenu(void) {
+	displayClock = !displayClock;
+	if (!displayClock) {
+		setValueToDisplay(88, 0, 1);
+		setValueToDisplay(88, 2, 3);
+	} else {
+		setValueToDisplay(minutes, 0, 1);
+		setValueToDisplay(seconds, 2, 3);
+	}
+}
+
+void key_press(uint8_t *keylock, volatile uint8_t *KEY_PIN, uint8_t key_mask, void (*f)()) {
 	//reaguje na wcisniecie przycisku
 	register uint8_t key_press = (*KEY_PIN & key_mask);
 	if (!*keylock && !key_press) {
 		*keylock = 1;
-		displayClock = !displayClock;
-		if (!displayClock) {
-			setValueToDisplay(88, 0, 1);
-			setValueToDisplay(88, 2, 3);
-		} else {
-			setValueToDisplay(minutes, 0, 1);
-			setValueToDisplay(seconds, 2, 3);
-		}
+		f();
+//		displayMenu();
 	} else if (*keylock && key_press) {
 		(*keylock)++;
 	}
