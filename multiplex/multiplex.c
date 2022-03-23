@@ -24,7 +24,7 @@ const uint8_t digits[] PROGMEM = { (SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_
 		0 };
 uint8_t valueToDisplay[4];
 
-void multiplex_init(void) {
+void multiplex_init() {
 	SEGMENT_DIRECTION = 0xff;
 	SEGMENT_PORT = 0xff;
 
@@ -32,7 +32,14 @@ void multiplex_init(void) {
 	ANODES_PORT &= ANODE_1 | ANODE_2 | ANODE_3 | ANODE_4;		// clear displays
 }
 
-void display(void) {
+void displayOff() {
+	valueToDisplay[0] = 10;
+	valueToDisplay[1] = 10;
+	valueToDisplay[2] = 10;
+	valueToDisplay[3] = 10;
+}
+
+void display() {
 	static uint8_t displayNumber;
 	ANODES_PORT = (ANODES_PORT & ANODE_MASK);		//clear displays
 	SEGMENT_PORT = pgm_read_byte(&digits[valueToDisplay[displayNumber]]);

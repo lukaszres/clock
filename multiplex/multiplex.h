@@ -31,8 +31,9 @@
 #define SEG_G (1<<4)
 #define SEG_DP (1<<3)
 
-void multiplex_init(void);
-void display(void);
+void multiplex_init();
+void display();
+void displayOff();
 void setValueToDisplay(uint8_t liczba, uint8_t firstNumber, uint8_t secondNumber);
 
 extern uint8_t valueToDisplay[4];

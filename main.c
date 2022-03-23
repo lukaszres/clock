@@ -27,14 +27,11 @@ float comparatorOverflows;
 struct Time tempTime;
 
 int main(void) {
-	valueToDisplay[0] = 10;
-	valueToDisplay[1] = 10;
-	valueToDisplay[2] = 10;
-	valueToDisplay[3] = 10;
 	_delay_ms(10); // oczekiwanie na ustalenie się stanu wysokiego na wejściu klawisza
 	sei();
 	timer1_init();
 	multiplex_init();
+	displayOff();
 	clock_init();
 
 	PORTD |= KEY1 | KEY2 | KEY3;
@@ -56,20 +53,24 @@ void minusSecond() {
 	decreaseSeconds(&tempTime);
 }
 
+void displayTempTime() {
+	setValueToDisplay(tempTime.minutes, 0, 1);
+	setValueToDisplay(tempTime.seconds, 2, 3);
+}
+
 void displayMenuSetTime(void) {
 	displayClock = !displayClock;
+	displayOff();
+	_delay_ms(1000);
 	tempTime = clockTime;
 	while (!displayClock) {
 		key_press(&keylock2, &PIND, KEY2, enableDisplayClock);
 		key_press(&keylock3, &PIND, KEY3, minusSecond);
 		key_press(&keylock1, &PIND, KEY1, addSecond);
-
-		setValueToDisplay(tempTime.minutes, 0, 1);
-		setValueToDisplay(tempTime.seconds, 2, 3);
+		displayTempTime();
 	}
 	clockTime = tempTime;
-	setValueToDisplay(clockTime.minutes, 0, 1);
-	setValueToDisplay(clockTime.seconds, 2, 3);
+//	displayTempTime();
 }
 
 void key_press(uint8_t *keylock, volatile uint8_t *KEY_PIN, uint8_t key_mask, void (*f)()) {
