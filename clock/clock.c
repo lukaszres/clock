@@ -8,10 +8,24 @@
 #include "../multiplex/multiplex.h"
 #include <stdbool.h>
 
-unsigned char seconds = 60;
-unsigned char minutes = 60;
-uint16_t ticks = 312;
+unsigned char clockSeconds;
+unsigned char clockMinutes;
+unsigned char clockHours;
+uint16_t ticks;
 bool displayClock = true;
+void increaseSeconds(unsigned char *seconds, unsigned char *minutes, unsigned char *hours);
+void resetTime();
+
+void clock_init() {
+	resetTime();
+}
+
+void resetTime() {
+	clockSeconds = 60;
+	clockMinutes = 60;
+	clockHours = 24;
+	ticks = 312;
+}
 
 void countClock(float comparatorOverflows) {
 	/*
@@ -24,23 +38,44 @@ void countClock(float comparatorOverflows) {
 		/*      One second has passed   */
 		ticks = 0;
 
-		seconds++;
-		if (seconds >= 60) {
-			seconds = 0;
-			minutes++;
-			if (minutes >= 60) {
-				minutes = 0;
-			}
-		}
+		increaseSeconds(&clockSeconds, &clockMinutes, &clockHours);
+
 		if (displayClock) {
-			setValueToDisplay(minutes, 0, 1);
-			setValueToDisplay(seconds, 2, 3);
+			setValueToDisplay(clockMinutes, 0, 1);
+			setValueToDisplay(clockSeconds, 2, 3);
 		}
 	}
 }
 
-void resetTime() {
-	seconds = 60;
-	minutes = 60;
-	ticks = 312;
+void increaseSeconds(unsigned char *seconds, unsigned char *minutes, unsigned char *hours) {
+	(*seconds)++;
+	if (*seconds >= 60) {
+		*seconds = 0;
+		(*minutes)++;
+		if (*minutes >= 60) {
+			*minutes = 0;
+			(*hours)++;
+			if (*hours >= 24) {
+				hours = 0;
+			}
+		}
+	}
+}
+
+void decreaseSeconds(unsigned char *seconds, unsigned char *minutes, unsigned char *hours) {
+	if (*seconds > 0) {
+		(*seconds)--;
+	} else {
+		*seconds = 59;
+		if (*minutes > 0) {
+			(*minutes)--;
+		} else {
+			*minutes = 59;
+			if (*hours > 0) {
+				(*hours)--;
+			} else {
+				*hours = 23;
+			}
+		}
+	}
 }
