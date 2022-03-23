@@ -4,16 +4,16 @@
  *  Created on: Mar 15, 2022
  *      Author: lkre
  */
-#include <stdint.h>
-#include "../multiplex/multiplex.h"
-#include <stdbool.h>
 
-unsigned char clockSeconds;
-unsigned char clockMinutes;
-unsigned char clockHours;
+#include <stdint.h>
+#include <stdbool.h>
+#include "clock.h"
+#include "../multiplex/multiplex.h"
+
+struct Time clockTime;
 uint16_t ticks;
 bool displayClock = true;
-void increaseSeconds(unsigned char *seconds, unsigned char *minutes, unsigned char *hours);
+void increaseSeconds(struct Time *time);
 void resetTime();
 
 void clock_init() {
@@ -21,9 +21,9 @@ void clock_init() {
 }
 
 void resetTime() {
-	clockSeconds = 60;
-	clockMinutes = 60;
-	clockHours = 24;
+	clockTime.seconds = 60;
+	clockTime.minutes = 60;
+	clockTime.hours = 24;
 	ticks = 312;
 }
 
@@ -38,43 +38,43 @@ void countClock(float comparatorOverflows) {
 		/*      One second has passed   */
 		ticks = 0;
 
-		increaseSeconds(&clockSeconds, &clockMinutes, &clockHours);
+		increaseSeconds(&clockTime);
 
 		if (displayClock) {
-			setValueToDisplay(clockMinutes, 0, 1);
-			setValueToDisplay(clockSeconds, 2, 3);
+			setValueToDisplay(clockTime.minutes, 0, 1);
+			setValueToDisplay(clockTime.seconds, 2, 3);
 		}
 	}
 }
 
-void increaseSeconds(unsigned char *seconds, unsigned char *minutes, unsigned char *hours) {
-	(*seconds)++;
-	if (*seconds >= 60) {
-		*seconds = 0;
-		(*minutes)++;
-		if (*minutes >= 60) {
-			*minutes = 0;
-			(*hours)++;
-			if (*hours >= 24) {
-				hours = 0;
+void increaseSeconds(struct Time *time) {
+	time->seconds++;
+	if (time->seconds >= 60) {
+		time->seconds = 0;
+		(time->minutes)++;
+		if (time->minutes >= 60) {
+			time->minutes = 0;
+			(time->hours)++;
+			if (time->hours >= 24) {
+				time->hours = 0;
 			}
 		}
 	}
 }
 
-void decreaseSeconds(unsigned char *seconds, unsigned char *minutes, unsigned char *hours) {
-	if (*seconds > 0) {
-		(*seconds)--;
+void decreaseSeconds(struct Time *time) {
+	if (time->seconds > 0) {
+		(time->seconds)--;
 	} else {
-		*seconds = 59;
-		if (*minutes > 0) {
-			(*minutes)--;
+		time->seconds = 59;
+		if (time->minutes > 0) {
+			(time->minutes)--;
 		} else {
-			*minutes = 59;
-			if (*hours > 0) {
-				(*hours)--;
+			time->minutes = 59;
+			if (time->hours > 0) {
+				(time->hours)--;
 			} else {
-				*hours = 23;
+				time->hours = 23;
 			}
 		}
 	}

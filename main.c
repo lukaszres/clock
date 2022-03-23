@@ -18,15 +18,13 @@
 
 void timer1_init();
 void key_press(uint8_t *keylock, volatile uint8_t *KEY_PIN, uint8_t key_mask, void (*f)());
-void displayMenu();
+void displayMenuSetTime();
 
 uint8_t keylock1;
 uint8_t keylock2;
 uint8_t keylock3;
 float comparatorOverflows;
-unsigned char tempSeconds;
-unsigned char tempMinutes;
-unsigned char tempHours;
+struct Time tempTime;
 
 int main(void) {
 	valueToDisplay[0] = 10;
@@ -41,7 +39,7 @@ int main(void) {
 
 	PORTD |= KEY1 | KEY2 | KEY3;
 	while (1) {
-		key_press(&keylock2, &PIND, KEY2, displayMenu);
+		key_press(&keylock2, &PIND, KEY2, displayMenuSetTime);
 		key_press(&keylock3, &PIND, KEY3, resetTime);
 	}
 }
@@ -51,31 +49,27 @@ void enableDisplayClock() {
 }
 
 void addSecond() {
-	increaseSeconds(&tempSeconds, &tempMinutes, &tempHours);
+	increaseSeconds(&tempTime);
 }
 
 void minusSecond() {
-	decreaseSeconds(&tempSeconds, &tempMinutes, &tempHours);
+	decreaseSeconds(&tempTime);
 }
 
-void displayMenu(void) {
+void displayMenuSetTime(void) {
 	displayClock = !displayClock;
-	tempSeconds = clockSeconds;
-	tempMinutes = clockMinutes;
-	tempHours = clockHours;
+	tempTime = clockTime;
 	while (!displayClock) {
 		key_press(&keylock2, &PIND, KEY2, enableDisplayClock);
 		key_press(&keylock3, &PIND, KEY3, minusSecond);
 		key_press(&keylock1, &PIND, KEY1, addSecond);
 
-		setValueToDisplay(tempMinutes, 0, 1);
-		setValueToDisplay(tempSeconds, 2, 3);
+		setValueToDisplay(tempTime.minutes, 0, 1);
+		setValueToDisplay(tempTime.seconds, 2, 3);
 	}
-	clockSeconds = tempSeconds;
-	clockMinutes = tempMinutes;
-	clockHours = tempHours;
-	setValueToDisplay(clockMinutes, 0, 1);
-	setValueToDisplay(clockSeconds, 2, 3);
+	clockTime = tempTime;
+	setValueToDisplay(clockTime.minutes, 0, 1);
+	setValueToDisplay(clockTime.seconds, 2, 3);
 }
 
 void key_press(uint8_t *keylock, volatile uint8_t *KEY_PIN, uint8_t key_mask, void (*f)()) {
